@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI</title>
+    <script src="/js/pocketbase.umd.js"></script>
+    <script src="/js/tailwind.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ["class"],
+            theme: {
+                container: {
+                    center: true,
+                    padding: "2rem",
+                    screens: {
+                        "2xl": "1400px",
+                    },
+                },
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "hsl(var(--primary))",
+                            foreground: "hsl(var(--primary-foreground))",
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(var(--secondary))",
+                            foreground: "hsl(var(--secondary-foreground))",
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(var(--destructive))",
+                            foreground: "hsl(var(--destructive-foreground))",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))",
+                        },
+                        accent: {
+                            DEFAULT: "hsl(var(--accent))",
+                            foreground: "hsl(var(--accent-foreground))",
+                        },
+                        popover: {
+                            DEFAULT: "hsl(var(--popover))",
+                            foreground: "hsl(var(--popover-foreground))",
+                        },
+                        card: {
+                            DEFAULT: "hsl(var(--card))",
+                            foreground: "hsl(var(--card-foreground))",
+                        },
+                    },
+                    borderRadius: {
+                        lg: "var(--radius)",
+                        md: "calc(var(--radius) - 2px)",
+                        sm: "calc(var(--radius) - 4px)",
+                    },
+                    keyframes: {
+                        "accordion-down": {
+                            from: { height: 0 },
+                            to: { height: "var(--radix-accordion-content-height)" },
+                        },
+                        "accordion-up": {
+                            from: { height: "var(--radix-accordion-content-height)" },
+                            to: { height: 0 },
+                        },
+                    },
+                    animation: {
+                        "accordion-down": "accordion-down 0.2s ease-out",
+                        "accordion-up": "accordion-up 0.2s ease-out",
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/css/all.min.css">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 210 40% 98%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 212.7 26.8% 83.9%;
+        }
+
+        .dot {
+            transform: translateX(0);
+        }
+
+        #showTranslation:checked ~ .dot {
+            transform: translateX(100%);
+        }
+
+        #showTranslation:checked ~ .dot {
+            background-color: #1e3a8a;
+        }
+
+        /* Custom checkbox styles */
+        .form-checkbox {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .form-checkbox:checked {
+            background-color: #1f2937; /* Changed to dark gray/black */
+            border-color: #1f2937; /* Changed to dark gray/black */
+        }
+
+        .form-checkbox:checked::after {
+            content: "\2713";
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* New styles for highlighted buttons */
+        .highlighted-button {
+            background-color: #1f2937 !important; /* Dark gray/black */
+            color: white !important;
+        }
+
+        /* Updated tag styles */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #2d3748; /* Dark background */
+            color: #ffffff; /* White text */
+            position: relative;
+            padding-right: 0.5rem; /* Reduced padding-right */
+        }
+
+        .tag-remove {
+            position: absolute;
+            top: -0.5rem; /* Move up */
+            right: -0.5rem; /* Move right */
+            background-color: #e53e3e; /* Red background color */
+            color: #ffffff;
+            border-radius: 9999px;
+            width: 1.25rem; /* Slightly larger */
+            height: 1.25rem; /* Slightly larger */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #ffffff; /* White border */
+        }
+
+        .conversation-bubble {
+            transition: background-color 0.3s ease;
+        }
+
+        .conversation-bubble:hover {
+            background-color: #4a5568;
+        }
+    </style>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <nav class="bg-gray-900">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-white text-xl font-bold">UI</h1>
+                        </div>
+                        <div class="ml-4 flex space-x-4">
+                            <a href="/index.html" class="text-white hover:text-gray-300 transition-colors duration-300">Chat</a>
+                            <a href="/group.html" class="text-white hover:text-gray-300 transition-colors duration-300">Group Chat</a>
+                            <a href="/time.html" class="text-white hover:text-gray-300 transition-colors duration-300">Timeline</a>
+                            <a href="/cards.html" class="text-white hover:text-gray-300 transition-colors duration-300">Cards</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                <!-- New filter row -->
+                <div class="mb-6 py-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button id="reloadBtn" class="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors duration-150 ease-in-out flex items-center justify-center text-sm font-medium shadow-sm w-22">
+                            <i class="fas fa-sync-alt mr-2"></i> Reset
+                        </button>
+                        <button id="sortUsersBtn" class="px-3 py-1 bg-white text-gray-600 rounded-md hover:bg-gray-100 border border-gray-300 transition-colors duration-150 ease-in-out text-sm w-14 grid grid-cols-[auto,1fr] items-center gap-1">
+                            <i id="sortIcon" class="fas fa-sort-down"></i>
+                            <span class="text-center">Sort</span>
+                        </button>
+                        <button id="filterRelevantBtn" class="px-3 py-1 bg-white text-gray-600 rounded-md hover:bg-gray-100 border border-gray-300 transition-colors duration-150 ease-in-out text-sm">
+                            Relevant
+                        </button>
+                        <button id="filterUnanalyzedBtn" class="px-3 py-1 bg-white text-gray-600 rounded-md hover:bg-gray-100 border border-gray-300 transition-colors duration-150 ease-in-out text-sm">
+                            ToDo
+                        </button>
+                        <select id="tagFilter" class="px-3 py-1 bg-white text-gray-600 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <option value="">Filter by tag</option>
+                        </select>
+                        <select id="languageFilter" class="px-3 py-1 bg-white text-gray-600 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                            <option value="">Filter by language</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Existing column layout -->
+                <div class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
+                    <div class="lg:w-1/6">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-900">Users</h2>
+                        <hr class="mb-2 border-t border-gray-300">
+                        <input type="text" id="userSearch" placeholder="Search users..." class="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md">
+                        <ul id="usersList" class="bg-white shadow overflow-hidden sm:rounded-md"></ul>
+                    </div>
+                    <div class="lg:w-1/6">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-900">Chats</h2>
+                        <hr class="mb-2 border-t border-gray-300">
+                        <input type="text" id="conversationSearch" placeholder="Search chats..." class="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md">
+                        <div id="conversationsContainer" class="hidden">
+                            <ul id="conversationsList" class="bg-white shadow overflow-hidden sm:rounded-md"></ul>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-lg font-semibold text-gray-900">Messages</h2>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="showTranslation" class="form-checkbox h-5 w-5 text-blue-600 transition duration-150 ease-in-out">
+                                <label for="showTranslation" class="ml-2 text-gray-700 font-medium">
+                                    Show Translation
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="mb-2 border-t border-gray-300">
+                        <input type="text" id="messageSearch" placeholder="Search messages..." class="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md">
+                        <div id="messagesContainer" class="hidden">
+                            <ul id="messagesList" class="bg-white shadow overflow-hidden sm:rounded-md p-4"></ul>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/6">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-900">Analysis</h2>
+                        <hr class="mb-2 border-t border-gray-300">
+                        <div id="analysisContainer" class="hidden">
+                            <div id="analysisControl" class="bg-white shadow overflow-hidden sm:rounded-md p-4">
+                                <label class="flex items-center space-x-2 mb-4 text-sm">
+                                    <input type="checkbox" id="relevanceCheckbox" class="form-checkbox">
+                                    <span>Relevant</span>
+                                </label>
+                                <label class="flex items-center space-x-2 mb-4 text-sm">
+                                    <input type="checkbox" id="doneCheckbox" class="form-checkbox">
+                                    <span>Done</span>
+                                </label>
+                                <div id="notesCard" class="mb-4">
+                                    <h5 class="mb-2 text-sm font-semibold text-gray-900">Notes</h5>
+                                    <p id="notesContent" class="text-sm font-normal text-gray-700 mb-4"></p>
+                                    <button id="editNotesBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">Edit Notes</button>
+                                </div>
+                                <div id="editNotesContainer" class="hidden">
+                                    <textarea id="notesTextarea" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 mb-2" placeholder="Write your thoughts here..."></textarea>
+                                </div>
+                                <div id="tagsContainer" class="mb-4">
+                                    <h5 class="mb-2 text-sm font-semibold text-gray-900">Tags</h5>
+                                    <input type="text" id="tagsInput" placeholder="Enter tags..." class="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md text-sm">
+                                    <div id="tagsList" class="flex flex-wrap gap-2"></div>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="mb-2 text-sm font-semibold text-gray-900">Language</h5>
+                                    <p id="languageDisplay" class="text-sm font-normal text-gray-700"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add this button just before the closing body tag -->
+    <div class="fixed bottom-4 right-4">
+        <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-xs transition-colors duration-150 ease-in-out">
+            Made by DI 2
+        </button>
+    </div>
+
+    <script>
+        const pb = new PocketBase('http://localhost:8090');
+
+        let users = []; // Store users globally
+        let isAscending = true; // Track sort direction
+        let showOnlyRelevant = false; // Track filter state
+        let currentTags = [];
+        let currentConversationId = null;
+        let allTags = []; // Store all unique tags
+        let showOnlyUnanalyzed = false;
+        let currentUserId = null;
+        let currentOtherUserId = null;
+        let allLanguages = []; // Store all unique languages
+
+        async function fetchUsers() {
+            console.log("Fetching users...");
+            try {
+                // Fetch all users first
+                const allUsers = await pb.collection('users').getFullList();
+                console.log("All users fetched:", allUsers);
+
+                // Fetch all group conversations
+                const groupConversations = await pb.collection('group_conversations').getFullList({
+                    fields: 'participants,is_relevant,is_done'
+                });
+                console.log("Group conversations fetched:", groupConversations);
+
+                // Get unique participant IDs from group conversations
+                const participantIds = new Set(groupConversations.flatMap(conv => conv.participants));
+                console.log("Unique participant IDs:", participantIds);
+
+                // Filter users who have participated in group chats
+                users = allUsers.filter(user => participantIds.has(user.id));
+                console.log("Users who participated in group chats:", users);
+
+                // Process conversation data for each user
+                for (let user of users) {
+                    const userConversations = groupConversations.filter(conv => conv.participants.includes(user.id));
+                    user.hasRelevantConversation = userConversations.some(conv => conv.is_relevant);
+                    user.relevantConversationsCount = userConversations.filter(conv => conv.is_relevant).length;
+                    user.hasUnanalyzedConversation = userConversations.some(conv => !conv.is_done);
+                    user.unanalyzedConversationsCount = userConversations.filter(conv => !conv.is_done).length;
+                    
+                    // Fetch languages for each user
+                    const userMessages = await pb.collection('group_messages').getList(1, 1, {
+                        filter: `sender="${user.id}"`,
+                        fields: 'language'
+                    });
+                    user.languages = [...new Set(userMessages.items.map(msg => msg.language))];
+                }
+
+                // Fetch all unique languages
+                const allMessages = await pb.collection('group_messages').getFullList({
+                    fields: 'language'
+                });
+                allLanguages = [...new Set(allMessages.map(msg => msg.language).filter(lang => lang))];
+                
+                // Populate language filter dropdown
+                const languageFilter = document.getElementById('languageFilter');
+                languageFilter.innerHTML = '<option value="">Filter by language</option>';
+                allLanguages.forEach(language => {
+                    const option = document.createElement('option');
+                    option.value = language;
+                    option.textContent = language;
+                    languageFilter.appendChild(option);
+                });
+
+                // Fetch all unique tags
+                const allConversations = await pb.collection('group_conversations').getFullList({
+                    fields: 'tags'
+                });
+                allTags = [...new Set(allConversations.flatMap(conv => conv.tags ? conv.tags.split(',') : []))];
+                
+                // Populate tag filter dropdown
+                const tagFilter = document.getElementById('tagFilter');
+                tagFilter.innerHTML = '<option value="">Filter by tag</option>';
+                allTags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+                    tagFilter.appendChild(option);
+                });
+
+                // Add event listeners for filters
+                languageFilter.addEventListener('change', filterUsers);
+                tagFilter.addEventListener('change', filterUsers);
+
+                renderUsers();
+
+                // Add event listener for search input
+                document.getElementById('userSearch').addEventListener('input', filterUsers);
+
+                // Show users list and hide the instruction text
+                document.getElementById('usersList').classList.remove('hidden');
+                document.getElementById('conversationsContainer').classList.add('hidden');
+                document.getElementById('messagesContainer').classList.add('hidden');
+                document.getElementById('analysisContainer').classList.add('hidden');
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        }
+
+        function renderUsers() {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                if ((!showOnlyRelevant || user.hasRelevantConversation) && 
+                    (!showOnlyUnanalyzed || user.hasUnanalyzedConversation)) {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2 cursor-pointer transition-colors duration-150 ease-in-out';
+                    li.textContent = user.username;
+                    li.dataset.username = user.username.toLowerCase();
+                    li.dataset.userId = user.id;
+                    li.onclick = () => handleUserSelection(li);
+                    usersList.appendChild(li);
+                }
+            });
+        }
+
+        function sortUsers() {
+            users.sort((a, b) => {
+                const nameA = a.username.toLowerCase();
+                const nameB = b.username.toLowerCase();
+                return isAscending ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
+            isAscending = !isAscending;
+            document.getElementById('sortIcon').className = isAscending ? 'fas fa-sort-down' : 'fas fa-sort-up';
+            renderUsers();
+        }
+
+        function toggleRelevantFilter() {
+            showOnlyRelevant = !showOnlyRelevant;
+            const filterRelevantBtn = document.getElementById('filterRelevantBtn');
+            filterRelevantBtn.classList.toggle('highlighted-button');
+            filterRelevantBtn.classList.toggle('text-white');
+            renderUsers(); // Re-render users list
+            if (currentUserId) {
+                fetchConversations(currentUserId);
+            }
+        }
+
+        function toggleUnanalyzedFilter() {
+            showOnlyUnanalyzed = !showOnlyUnanalyzed;
+            const filterUnanalyzedBtn = document.getElementById('filterUnanalyzedBtn');
+            filterUnanalyzedBtn.classList.toggle('highlighted-button');
+            filterUnanalyzedBtn.classList.toggle('text-white');
+            renderUsers(); // Re-render users list
+            if (currentUserId) {
+                fetchConversations(currentUserId);
+            }
+        }
+
+        async function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const selectedTag = document.getElementById('tagFilter').value;
+            const selectedLanguage = document.getElementById('languageFilter').value;
+
+            console.log("Filtering users with tag:", selectedTag, "and language:", selectedLanguage); // Debug log
+
+            let filteredUsers = users;
+
+            if (selectedTag) {
+                filteredUsers = await filterUsersByTag(filteredUsers, selectedTag);
+            }
+
+            if (selectedLanguage) {
+                filteredUsers = filteredUsers.filter(user => user.languages.includes(selectedLanguage));
+            }
+
+            console.log("Filtered users:", filteredUsers); // Debug log
+
+            renderFilteredUsers(filteredUsers, searchTerm);
+
+            // If a user is currently selected, refresh the conversations
+            if (currentUserId) {
+                fetchConversations(currentUserId);
+            }
+        }
+
+        async function filterUsersByTag(usersToFilter, selectedTag) {
+            console.log("Filtering users by tag:", selectedTag); // Debug log
+            const filteredUsers = [];
+            for (let user of usersToFilter) {
+                const conversations = await pb.collection('group_conversations').getList(1, 1, {
+                    filter: `participants~"${user.id}" && tags~"${selectedTag}"`,
+                    fields: 'id'
+                });
+                if (conversations.totalItems > 0) {
+                    filteredUsers.push(user);
+                }
+            }
+            console.log("Users filtered by tag:", filteredUsers); // Debug log
+            return filteredUsers;
+        }
+
+        function renderFilteredUsers(filteredUsers, searchTerm) {
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            filteredUsers.forEach(user => {
+                if ((!showOnlyRelevant || user.hasRelevantConversation) && 
+                    (!showOnlyUnanalyzed || user.hasUnanalyzedConversation) &&
+                    user.username.toLowerCase().includes(searchTerm)) {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2 cursor-pointer transition-colors duration-150 ease-in-out';
+                    li.textContent = user.username;
+                    li.dataset.username = user.username.toLowerCase();
+                    li.dataset.userId = user.id;
+                    li.onclick = () => handleUserSelection(li);
+                    usersList.appendChild(li);
+                }
+            });
+        }
+
+        async function fetchConversations(userId) {
+            currentUserId = userId;
+            const conversationsList = document.getElementById('conversationsList');
+            conversationsList.innerHTML = '';
+
+            try {
+                let filter = `participants~"${userId}"`;
+                if (showOnlyRelevant) {
+                    filter += ' && is_relevant=true';
+                }
+                if (showOnlyUnanalyzed) {
+                    filter += ' && is_done=false';
+                }
+
+                // Add tag filter
+                const selectedTag = document.getElementById('tagFilter').value;
+                if (selectedTag) {
+                    filter += ` && tags~"${selectedTag}"`;
+                }
+
+                console.log("Fetching conversations with filter:", filter); // Debug log
+
+                const groupConversations = await pb.collection('group_conversations').getList(1, 50, {
+                    filter: filter,
+                    sort: '-created',
+                    expand: 'participants'
+                });
+
+                console.log("Fetched conversations:", groupConversations.items); // Debug log
+
+                // Filter conversations based on language
+                const selectedLanguage = document.getElementById('languageFilter').value;
+                let filteredConversations = groupConversations.items;
+
+                if (selectedLanguage) {
+                    filteredConversations = await Promise.all(filteredConversations.map(async (conversation) => {
+                        const messages = await pb.collection('group_messages').getList(1, 1, {
+                            filter: `group_conversation_id="${conversation.id}" && language="${selectedLanguage}"`,
+                        });
+                        return messages.totalItems > 0 ? conversation : null;
+                    }));
+                    filteredConversations = filteredConversations.filter(conv => conv !== null);
+                }
+
+                console.log("Filtered conversations:", filteredConversations); // Debug log
+
+                for (const conversation of filteredConversations) {
+                    const li = document.createElement('li');
+                    li.className = 'px-4 py-2 cursor-pointer transition-colors duration-150 ease-in-out bg-white rounded-lg mb-2';
+                    
+                    const participantBubbles = conversation.expand.participants
+                        .filter(participant => participant.id !== userId)
+                        .map(participant => `<span class="inline-block bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full mr-1 mb-1">${participant.username}</span>`)
+                        .join('');
+                    
+                    li.innerHTML = `<div class="flex flex-wrap">${participantBubbles}</div>`;
+                    li.dataset.conversationId = conversation.id;
+                    li.onclick = () => handleConversationSelection(li);
+                    conversationsList.appendChild(li);
+                }
+
+                document.getElementById('conversationsContainer').classList.remove('hidden');
+            } catch (error) {
+                console.error("Error fetching group conversations:", error);
+            }
+        }
+
+        async function fetchGroupMessages(conversationId) {
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            const showTranslation = document.getElementById('showTranslation').checked;
+
+            try {
+                const messages = await pb.collection('group_messages').getList(1, 50, {
+                    filter: `group_conversation_id="${conversationId}"`,
+                    sort: 'timestamp',
+                    expand: 'sender'
+                });
+
+                if (messages.items.length === 0) {
+                    messagesList.innerHTML = '<li class="px-4 py-2">No messages in this group chat.</li>';
+                } else {
+                    renderMessages(messages.items, showTranslation);
+                }
+
+                document.getElementById('messagesContainer').classList.remove('hidden');
+            } catch (error) {
+                console.error("Error fetching group messages:", error);
+                messagesList.innerHTML = '<li class="px-4 py-2">Error loading messages. Please try again.</li>';
+            }
+        }
+
+        function renderMessages(messages, showTranslation) {
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            let isLeft = true; // Start with left alignment
+
+            messages.forEach(message => {
+                const li = document.createElement('li');
+                li.className = `mb-4 ${isLeft ? 'text-left' : 'text-right'}`;
+                li.innerHTML = `
+                    <div class="flex ${isLeft ? 'justify-start' : 'justify-end'}">
+                        <div class="flex flex-col max-w-[70%] ${isLeft ? 'items-start' : 'items-end'}">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-900">${message.expand.sender.username}</span>
+                                <span class="text-sm font-normal text-gray-500">${new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <div class="inline-block px-4 py-2 rounded-lg ${isLeft ? 'bg-gray-200 text-gray-700' : 'bg-gray-800 text-white'}">
+                                <p class="text-sm">${showTranslation && message.content_translated ? message.content_translated : message.content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messagesList.appendChild(li);
+                isLeft = !isLeft; // Toggle alignment for next message
+            });
+        }
+
+        async function displayConversationDetails(conversationId) {
+            try {
+                const conversation = await pb.collection('group_conversations').getOne(conversationId);
+                
+                document.getElementById('relevanceCheckbox').checked = conversation.is_relevant;
+                document.getElementById('doneCheckbox').checked = conversation.is_done;
+                document.getElementById('notesContent').textContent = conversation.note || 'No notes yet.';
+                document.getElementById('notesTextarea').value = conversation.note || '';
+                
+                currentTags = conversation.tags ? conversation.tags.split(',') : [];
+                renderTags();
+                
+                const latestMessage = await pb.collection('group_messages').getFirstListItem(
+                    `group_conversation_id="${conversationId}"`,
+                    {
+                        sort: '-timestamp',
+                        fields: 'language'
+                    }
+                );
+
+                document.getElementById('languageDisplay').textContent = latestMessage.language || 'Not specified';
+            } catch (error) {
+                console.error("Error fetching group conversation details:", error);
+            }
+        }
+
+        function handleUserSelection(li) {
+            if (li.classList.contains('highlighted-button')) {
+                li.classList.remove('highlighted-button', 'text-white', 'hover:bg-blue-600');
+                li.classList.add('hover:bg-gray-100');
+                resetColumns();
+            } else {
+                highlightSelectedItem(li, 'usersList');
+                fetchConversations(li.dataset.userId);
+            }
+        }
+
+        function handleConversationSelection(li) {
+            const allItems = document.querySelectorAll('#conversationsList li');
+            allItems.forEach(item => {
+                item.classList.remove('bg-gray-800', 'text-white');
+                item.classList.add('bg-white', 'text-gray-700');
+            });
+            
+            li.classList.remove('bg-white', 'text-gray-700');
+            li.classList.add('bg-gray-800', 'text-white');
+            
+            currentConversationId = li.dataset.conversationId;
+            displayConversationDetails(currentConversationId);
+            fetchGroupMessages(currentConversationId);
+            
+            document.getElementById('messagesContainer').classList.remove('hidden');
+            document.getElementById('analysisContainer').classList.remove('hidden');
+            document.getElementById('notesCard').classList.remove('hidden');
+            document.getElementById('editNotesContainer').classList.add('hidden');
+        }
+
+        async function updateRelevanceAnalysis(isRelevant) {
+            try {
+                await pb.collection('group_conversations').update(currentConversationId, {
+                    is_relevant: isRelevant
+                });
+                console.log('Relevance updated successfully');
+                updateUIAfterRelevanceChange();
+            } catch (error) {
+                console.error("Error updating relevance:", error);
+                alert('Failed to update relevance. Please try again.');
+            }
+        }
+
+        function updateUIAfterRelevanceChange() {
+            // Update any UI elements that depend on the relevance status
+            // For example, you might want to update the user list if it shows relevance status
+            renderUsers();
+        }
+
+        async function updateDoneStatus(isDone) {
+            try {
+                await pb.collection('group_conversations').update(currentConversationId, {
+                    is_done: isDone
+                });
+                console.log('Done status updated successfully');
+            } catch (error) {
+                console.error("Error updating done status:", error);
+                alert('Failed to update done status. Please try again.');
+            }
+        }
+
+        async function updateNotes(notes) {
+            try {
+                await pb.collection('group_conversations').update(currentConversationId, {
+                    note: notes
+                });
+                document.getElementById('notesContent').textContent = notes || 'No notes yet.';
+                document.getElementById('notesCard').classList.remove('hidden');
+                document.getElementById('editNotesContainer').classList.add('hidden');
+                console.log('Notes updated successfully');
+            } catch (error) {
+                console.error("Error updating notes:", error);
+                alert('Failed to update notes. Please try again.');
+            }
+        }
+
+        document.getElementById('editNotesBtn').addEventListener('click', function() {
+            document.getElementById('notesCard').classList.add('hidden');
+            document.getElementById('editNotesContainer').classList.remove('hidden');
+        });
+
+        document.getElementById('conversationSearch').addEventListener('input', filterConversations);
+
+        function filterConversations() {
+            const searchTerm = document.getElementById('conversationSearch').value.toLowerCase();
+            const chatItems = document.querySelectorAll('#conversationsList li');
+
+            chatItems.forEach(item => {
+                const username = item.textContent.toLowerCase();
+                if (username.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filterMessages() {
+            const searchTerm = document.getElementById('messageSearch').value.toLowerCase();
+            const messageItems = document.querySelectorAll('#messagesList li');
+
+            messageItems.forEach(item => {
+                const messageContent = item.querySelector('p').textContent.toLowerCase();
+                if (messageContent.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function renderTags() {
+            const tagsList = document.getElementById('tagsList');
+            tagsList.innerHTML = '';
+            currentTags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <button class="tag-remove" onclick="removeTag('${tag}')">×</button>
+                `;
+                tagsList.appendChild(tagElement);
+            });
+        }
+
+        async function removeTag(tagToRemove) {
+            currentTags = currentTags.filter(tag => tag !== tagToRemove);
+            renderTags();
+            
+            // Update tags in PocketBase
+            try {
+                await pb.collection('group_conversations').update(currentConversationId, {
+                    tags: currentTags.join(',')
+                });
+                console.log('Tag removed successfully');
+            } catch (error) {
+                console.error("Error updating tags:", error);
+                alert('Failed to remove tag. Please try again.');
+            }
+        }
+
+        document.getElementById('tagsInput').addEventListener('keydown', async function(event) {
+            if (event.key === 'Enter') {
+                const tag = event.target.value.trim();
+                if (tag !== '') {
+                    currentTags.push(tag);
+                    renderTags();
+                    event.target.value = '';
+                    
+                    // Update tags in PocketBase
+                    try {
+                        await pb.collection('group_conversations').update(currentConversationId, {
+                            tags: currentTags.join(',')
+                        });
+                    } catch (error) {
+                        console.error("Error updating tags:", error);
+                    }
+                }
+            }
+        });
+
+        async function displayConversationDetails(conversationId) {
+            try {
+                const conversation = await pb.collection('group_conversations').getOne(conversationId);
+                
+                document.getElementById('relevanceCheckbox').checked = conversation.is_relevant;
+                document.getElementById('doneCheckbox').checked = conversation.is_done;
+                document.getElementById('notesContent').textContent = conversation.note || 'No notes yet.';
+                document.getElementById('notesTextarea').value = conversation.note || '';
+                
+                currentTags = conversation.tags ? conversation.tags.split(',') : [];
+                renderTags();
+                
+                const latestMessage = await pb.collection('group_messages').getFirstListItem(
+                    `group_conversation_id="${conversationId}"`,
+                    {
+                        sort: '-timestamp',
+                        fields: 'language'
+                    }
+                );
+
+                document.getElementById('languageDisplay').textContent = latestMessage.language || 'Not specified';
+            } catch (error) {
+                console.error("Error fetching group conversation details:", error);
+            }
+        }
+
+        function highlightSelectedItem(selectedItem, listId) {
+            const allItems = document.querySelectorAll(`#${listId} li`);
+            allItems.forEach(item => {
+                item.classList.remove('highlighted-button', 'hover:bg-blue-600');
+                item.classList.add('hover:bg-gray-100');
+            });
+            
+            selectedItem.classList.add('highlighted-button');
+            selectedItem.classList.remove('hover:bg-gray-100');
+        }
+
+        function resetColumns() {
+            document.getElementById('conversationsContainer').classList.add('hidden');
+            document.getElementById('conversationsList').innerHTML = '';
+
+            document.getElementById('messagesContainer').classList.add('hidden');
+            document.getElementById('messagesList').innerHTML = '';
+
+            document.getElementById('analysisContainer').classList.add('hidden');
+
+            currentConversationId = null;
+            currentUserId = null;
+            currentOtherUserId = null;
+            currentTags = [];
+        }
+
+        function resetMessagesAndAnalysis() {
+            document.getElementById('messagesContainer').classList.add('hidden');
+            document.getElementById('messagesList').innerHTML = '';
+
+            document.getElementById('analysisContainer').classList.add('hidden');
+
+            currentConversationId = null;
+            currentOtherUserId = null;
+            currentTags = [];
+        }
+
+        function handleUserSelection(li) {
+            if (li.classList.contains('highlighted-button')) {
+                li.classList.remove('highlighted-button', 'text-white', 'hover:bg-blue-600');
+                li.classList.add('hover:bg-gray-100');
+                resetColumns();
+            } else {
+                highlightSelectedItem(li, 'usersList');
+                fetchConversations(li.dataset.userId);
+            }
+        }
+
+        function handleConversationSelection(li) {
+            const allItems = document.querySelectorAll('#conversationsList li');
+            allItems.forEach(item => {
+                item.classList.remove('bg-gray-800', 'text-white');
+                item.classList.add('bg-white', 'text-gray-700');
+            });
+            
+            li.classList.remove('bg-white', 'text-gray-700');
+            li.classList.add('bg-gray-800', 'text-white');
+            
+            currentConversationId = li.dataset.conversationId;
+            displayConversationDetails(currentConversationId);
+            fetchGroupMessages(currentConversationId);
+            
+            document.getElementById('messagesContainer').classList.remove('hidden');
+            document.getElementById('analysisContainer').classList.remove('hidden');
+            document.getElementById('notesCard').classList.remove('hidden');
+            document.getElementById('editNotesContainer').classList.add('hidden');
+        }
+
+        function reloadPage() {
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsers();
+
+            document.getElementById('reloadBtn').addEventListener('click', reloadPage);
+            document.getElementById('sortUsersBtn').addEventListener('click', sortUsers);
+            document.getElementById('filterRelevantBtn').addEventListener('click', toggleRelevantFilter);
+            document.getElementById('filterUnanalyzedBtn').addEventListener('click', toggleUnanalyzedFilter);
+            document.getElementById('tagFilter').addEventListener('change', filterUsers);
+            document.getElementById('languageFilter').addEventListener('change', filterUsers);
+
+            document.getElementById('editNotesBtn').addEventListener('click', function() {
+                document.getElementById('notesCard').classList.add('hidden');
+                document.getElementById('editNotesContainer').classList.remove('hidden');
+            });
+
+            document.getElementById('userSearch').addEventListener('input', filterUsers);
+            document.getElementById('conversationSearch').addEventListener('input', filterConversations);
+            document.getElementById('messageSearch').addEventListener('input', filterMessages);
+
+            document.getElementById('relevanceCheckbox').addEventListener('change', function(event) {
+                updateRelevanceAnalysis(event.target.checked);
+            });
+
+            document.getElementById('doneCheckbox').addEventListener('change', function(event) {
+                updateDoneStatus(event.target.checked);
+            });
+
+            document.getElementById('notesTextarea').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    updateNotes(this.value);
+                }
+            });
+
+            document.getElementById('showTranslation').addEventListener('change', function() {
+                console.log("Translation toggle changed:", this.checked);
+                if (currentConversationId) {
+                    fetchGroupMessages(currentConversationId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
